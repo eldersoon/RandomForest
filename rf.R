@@ -1,17 +1,33 @@
-# Random Forest
-library(randomForest)
-library(e1071)
-
+library(mctest)
+library(dummies)
+library(Information)
+library(pROC)
 
 credit_data = read.csv("credit_data.csv")
+credit_data$rotulo = credit_data$rotulo 
 
-str(credit_data)
- 
-credit_data$rotulo = as.factor(credit_data$rotulo)
+# I.V Calculation
+IV <- create_infotables(data=credit_data, y="rotulo", parallel=FALSE)
+for (i in 1:length(colnames(credit_data))){
+  seca = IV[[1]][i][1]
+  sum(seca[[1]][5])
+  print(paste(colnames(credit_data)[i],",IV_Value:",round(sum(seca[[1]][5]),4)))
+}
 
-table(credit_data$rotulo)
+# Dummy variables creation
+dummy_salario =data.frame(dummy(credit_data$salario))
+dummy_idade = data.frame(dummy(credit_data$idade))
+dummy_emprestimo =  data.frame(dummy(credit_data$emprestimo))
 
 
+# Cleaning the variables name from . to _
+colClean <- function(x){ colnames(x) <- gsub("\\.", "_", colnames(x)); x } 
+dummy_salario =colClean(dummy_salario);
+dummy_idade = colClean(dummy_idade);
+dummy_emprestimo =  colClean(dummy_emprestimo);
+
+
+# Setting seed for repeatability of results of train & test split
 set.seed(123)
 numrow = nrow(credit_data)
 trnind = sample(1:numrow,size = as.integer(0.7*numrow))
@@ -19,53 +35,60 @@ train_data = credit_data[trnind,]
 test_data = credit_data[-trnind,]
 
 
-#acontece um erro
-##Can not handle categorical predictors with more than 53 categories.
-rf_fit = randomForest(rotulo~.,data = train_data,mtry=4,maxnodes= 2000,ntree=1000,nodesize = 2)
-rf_pred = predict(rf_fit,data = train_data,type = "response")
-rf_predt = predict(rf_fit,newdata = test_data,type = "response")
+# Removing insignificant variables one by one
+remove_cols_insig = c("cliente_id")
 
-tble = table(train_data$rotulo,rf_pred)
-tblet = table(test_data$rotulo,rf_predt)
+remove_cols = c(remove_cols_insig)
 
+glm_fit = glm(rotulo ~.,family = "binomial",data = train_data[,!(names(train_data) %in% remove_cols)])
+# Significance check - p_value
+summary(glm_fit)
+
+# Multi collinearity check - VIF
+remove_cols_vif = c(remove_cols,"rotulo")
+vif_table = imcdiag(train_data[,!(names(train_data) %in% remove_cols_vif)],train_data$rotulo,detr=0.001, conf=0.99)
+vif_table  
+
+# Predicting probabilities
+train_data$glm_probs = predict(glm_fit,newdata = train_data,type = "response")
+test_data$glm_probs = predict(glm_fit,newdata = test_data,type = "response")
+
+# Area under ROC
+
+ROC1 <- roc(as.factor(train_data$rotulo),train_data$glm_probs)
+plot(ROC1, col = "blue")
+print(paste("Area under the curve",round(auc(ROC1),4))) 
+
+# Actual prediction based on threshold tuning 
+threshold_vals = c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)
+for (thld in threshold_vals){
+  train_data$glm_pred = 0
+  train_data$glm_pred[train_data$glm_probs>thld]=1
+  
+  tble = table(train_data$glm_pred,train_data$rotulo)
+  acc = (tble[1,1]+tble[2,2])/sum(tble)
+  print(paste("Threshold",thld,"Train accuracy",round(acc,4)))
+  
+}
+
+# Best threshold from above search is 0.5 with accuracy as 0.7841
+best_threshold = 0.5
+
+# Train confusion matrix & accuracy
+train_data$glm_pred = 0
+train_data$glm_pred[train_data$glm_probs>best_threshold]=1
+tble = table(train_data$glm_pred,train_data$rotulo)
 acc = (tble[1,1]+tble[2,2])/sum(tble)
-acct = (tblet[1,1]+tblet[2,2])/sum(tblet)
-print(paste("Train acc",round(acc,4),"Test acc",round(acct,4)))
+print(paste("Confusion Matrix - Train Data"))
+print(tble)
+print(paste("Train accuracy",round(acc,4)))
 
-# Grid Search
-rf_grid = tune(randomForest,rotulo~.,data = train_data,ranges = list(
-  mtry = c(4,5),
-  maxnodes = c(700,1000),
-  ntree = c(1000,2000,3000),
-  nodesize = c(1,2)
-),
-tunecontrol = tune.control(cross = 5)
-)
+# Test confusion matrix & accuracy
+test_data$glm_pred = 0
+test_data$glm_pred[test_data$glm_probs>best_threshold]=1
+tble_test = table(test_data$glm_pred,test_data$class)
+acc_test = (tble_test[1,1]+tble_test[2,2])/sum(tble_test)
+print(paste("Confusion Matrix - Test Data"))
+print(tble_test)
+print(paste("Test accuracy",round(acc_test,4)))
 
-summary(rf_grid)
-
-best_model = rf_grid$best.model
-summary(best_model)
-
-y_pred_train = predict(best_model,data = train_data)
-train_conf_mat = table(train_data$rotulo,y_pred_train)
-
-print(paste("Train Confusion Matrix - Grid Search:"))
-print(train_conf_mat)
-
-train_acc = (train_conf_mat[1,1]+train_conf_mat[2,2])/sum(train_conf_mat)
-print(paste("Train_accuracy-Grid Search:",round(train_acc,4)))
-
-y_pred_test = predict(best_model,newdata = test_data)
-test_conf_mat = table(test_data$rotulo,y_pred_test)
-
-print(paste("Test Confusion Matrix - Grid Search:"))
-print(test_conf_mat)
-
-test_acc = (test_conf_mat[1,1]+test_conf_mat[2,2])/sum(test_conf_mat)
-print(paste("Test_accuracy-Grid Search:",round(test_acc,4)))
-
-# Variable Importance
-vari = varImpPlot(best_model)
-print(paste("Variable Importance - Table"))
-print(vari)
