@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8"> 
+	<title>Árvore</title>
+	<link rel="stylesheet" href="css/docs.min.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+	<body>
+		<div class="container-fluid">
+			<b>Caso:</b>
+			<div class="row">
+				<div class="col-4">
+					<form class="form-inline">
+						<input type="number" id="salario" placeholder="Salário" class="form-control" style="width: 70px;">
+						<input type="number" id="idade" placeholder="Idade" class="form-control" style="width: 60px;">
+						<input type="number" id="emprestimo" placeholder="Empréstimo" class="form-control" style="width: 100px;">
+						<button class="btn btn-success btn-sm ml-2" type="button" id="verificar">Verificar</button>
+					</form>
+				</div>
+			</div>
+				<div id="testingItem"></div>
+			<br/>
+			<b>Previsão da árvore:</b>
+				<div id="decisionTreePrediction"></div>
+			<br/>
+			<b>Random Forest:</b>
+				<div id="randomForestPrediction"></div>
+			<br/>
+			<b>Rede neural:</b>
+				<div id="neuralPrediction"></div>
+			<br/>
+				<b>Árvore de decisão:</b>
+			<br/>
+			<div class="row">
+				<div class="col text-left">
+					<div class="tree" id="displayTree" ></div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col text-center mt-2" id="botoes">
+					<button class="btn btn-primary" id="prev">Árvore anterior</button>
+					<button class="btn btn-primary" id="next">Próxima árvore</button>
+				</div>
+			</div>
+			
+		</div>
+	</body>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/decision-tree.js"></script>
+	<script type="text/javascript" src="js/jquery.csv.min.js"></script>
+	<script type="text/javascript" src="js/browser.js"></script>
+	<script type="text/javascript" src="js/buildneural.js"></script>
+	<script type="text/javascript" src="js/buildforest.js"></script>
+	<script type="text/javascript" src="js/core.js"></script>
+	
+</html>
