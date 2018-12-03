@@ -1,11 +1,11 @@
 $(document).ready(function() {
-    //Requisitar os dados
+    //datas loading...
     $.ajax({
         type: "GET",
         url: "credit_data.csv",
         dataType: "text",
         success: function(data) {
-            //Trasnformar csv em um array de objetos
+            //.csv to array
             data = $.csv.toObjects(data);
             processData(data);
             allInt(data);
@@ -14,20 +14,19 @@ $(document).ready(function() {
         }
      });
 });
-//remove a coluna id e verifica se os dados são válidos
+//clean uninteresting variables
 function processData(data) {
     for (var i = 0; i < data.length; i++) {
         delete data[i].cliente_id;
         for (var propriedade in data[i]) {
           if (data[i][propriedade]=== "" || parseFloat(data[i][propriedade].replace(',','.'))< 0) {
-            // console.log(propriedade);
-            //remove dado da base
+            //remove line
             data.splice(i,1);
             i=0;
             break;
           }
-        }//fim for propriedades
-    }//fim for todos os registros
+        }
+    }
 }
 
 function allInt(data) {

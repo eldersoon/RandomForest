@@ -4,6 +4,23 @@ canvas {
     margin-top: 5px;
 }
 
+.form-control{min-width:300px;}
+
+body{
+    background-color: #94a0b4;
+}
+
+#bloco{
+    position: relative;
+    top: 20px;
+    padding: 20px;
+    box-shadow: 1px 2px 4px black;
+    border-radius: 5px;
+    max-width: 500px;
+    border-color: #666;
+    background-color: #EDEDED;
+}
+
 .ar,#displayTree {
     width: 100em;
     overflow-x: auto;

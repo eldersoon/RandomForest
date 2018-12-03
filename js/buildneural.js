@@ -8,12 +8,12 @@ function buildNeural(data) {
 	// create a simple feed forward neural network with backpropagation
 	const net = new brain.NeuralNetwork(config);
 
+	//training datas 
 	var trainingSet = [], caso = {};
-	//separar os dados(input) dos rótulos(output)
+	
 	for (var i =0; i < data.length ; i++) {
 		var object = {
-				// input: [data[i].salario,data[i].idade,data[i].emprestimo],
-				// output: [data[i].rotulo]
+			
 				input: {salario: data[i].salario, idade: data[i].idade, emprestimo: data[i].emprestimo},
 				output: {rotulo: data[i].rotulo}
 				

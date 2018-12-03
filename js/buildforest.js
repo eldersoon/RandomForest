@@ -1,5 +1,5 @@
 function buildForest(data) {
-	var i = -1, caso = {salario:2000, idade: 21, emprestimo:10000}; //{salario:2000, idade: 21, emprestimo:10000};
+	var i = -1, caso = {salario:2000, idade: 21, emprestimo:10000};
 	// Configuration
 	var config = {
 	    trainingSet: data, 
