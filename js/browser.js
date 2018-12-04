@@ -951,7 +951,7 @@ function calcDeltasRelu(error, output) {
 
 function calcDeltasLeakyRelu(error, output) {
   //leaky relu derivative
-  return output > 0 ? error : 0.01 * error;
+  return output > 0 ? error : 1 * error;
 }
 
 function calcDeltasTanh(error, output) {

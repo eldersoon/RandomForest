@@ -22,7 +22,7 @@ function buildNeural(data) {
 		}
 
 		net.train(trainingSet);
-	// console.log(trainingSet);
+		//neural test
 	$('#verificar').on('click',function () {
 		caso = {salario: parseInt($('#salario').val()), idade: parseInt($('#idade').val()), emprestimo: parseInt($('#emprestimo').val())};
 		var output = net.run(caso);

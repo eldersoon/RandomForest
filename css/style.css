@@ -4,6 +4,10 @@ canvas {
     margin-top: 5px;
 }
 
+#testingItem{
+    display: none;
+}
+
 .form-control{min-width:300px;}
 
 body{

@@ -33,7 +33,6 @@ function allInt(data) {
     for (var i = 0; i < data.length; i++) {
         for (var propriedade in data[i]) {
             data[i][propriedade] = parseInt(data[i][propriedade]);
-             //data[i][propriedade] = parseFloat(data[i][propriedade].replace(',','.')).toFixed(2);
         }
     }
 }

@@ -1,22 +1,19 @@
 function buildForest(data) {
-	var i = -1, caso = {salario:2000, idade: 21, emprestimo:10000};
+	var i = 0, caso = {};
 	// Configuration
 	var config = {
 	    trainingSet: data, 
 	    categoryAttr: 'rotulo', 
-	    //ignoredAttributes: ['cliente_id'],
-	    //maxTreeDepth: 70 //por padrão
 	};
 
 	// Building Decision Tree
 	var decisionTree = new dt.DecisionTree(config);
 
 	// Building Random Forest
-	var numberOfTrees = 4;
+	var numberOfTrees = 10;
 	var randomForest = new dt.RandomForest(config, numberOfTrees);
 
-	// console.log(randomForest.trees[0]);
-
+	
 	// Testing Decision Tree and Random Forest
 	$('#verificar').on('click',function () {
 		caso = {salario: parseInt($('#salario').val()), idade: parseInt($('#idade').val()), emprestimo: parseInt($('#emprestimo').val())};
